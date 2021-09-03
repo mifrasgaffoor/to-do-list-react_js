@@ -1,25 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import React,{useState,useEffect}from 'react'
+import InputArea from './InputArea'
+import ToDoArea from './ToDoArea'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+const [item, setItem] = useState([])
+
+
+
+const add=(items)=>{
+  setItem((currentItem)=> {
+  localStorage.setItem("items" , JSON.stringify([...currentItem,items]))
+  return [...currentItem,items]});
+};
+
+useEffect(()=>{
+  const items  = localStorage.getItem("items");
+  setItem(JSON.parse(items));
+},[])
+
+
+
+const deleteItem =(id)=>{
+  setItem((currentItem)=>{
+    let temp =  currentItem.filter((item,index)=>{
+      return index !== id;
+    })
+
+  localStorage.setItem("items" , JSON.stringify(temp));
+  return temp;
+  })
 }
 
-export default App;
+console.log(item);
+
+
+  return (
+    <div className="container">
+    <div className="heading">
+
+      <h1>To-Do-List</h1>
+    </div>
+      <InputArea additem={add}      />
+      <div>
+     <ul>
+     {item.map((item,index)=>{
+    return(
+     <ToDoArea 
+      text={item}  
+      key={index}  
+      index={index} 
+      onClick={()=>deleteItem(index)}    />
+    )
+       })}
+     </ul>
+       
+      </div>
+    </div>
+  )
+}
+
+export default App
